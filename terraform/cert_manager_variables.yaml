@@ -1,0 +1,5 @@
+installCRDs: true
+serviceAccount:
+  name: cert-manager-route53
+extraArgs:
+  - --issuer-ambient-credentials

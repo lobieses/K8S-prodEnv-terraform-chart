@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend_name }}-deploy
+  namespace: {{ .Values.environment }}
+  labels:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.backend_name }}
+spec:
+  replicas: {{ .Values.backend_replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      env: {{ .Values.environment }}
+      kind: {{ .Values.backend_name }}-pod
+  template:
+    metadata:
+      labels:
+        env: {{ .Values.environment }}
+        kind: {{ .Values.backend_name }}-pod
+    spec:
+      containers:
+        - name: {{ .Values.backend_name }}-container
+          image: {{ .Values.backend_image }}
+          ports:
+            - containerPort: {{ .Values.backend_port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.backend_name }}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.backend_name }}-svc
+  namespace: {{ .Values.environment }}
+  labels:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.backend_name }}
+spec:
+  selector:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.backend_name }}-pod
+  ports:
+    - name      : {{ .Values.backend_name }}-port
+      protocol  : TCP
+      port      : 80
+      targetPort: {{ .Values.backend_port }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.backend_name }}-config
+  namespace: {{ .Values.environment }}
+data:
+  MONGO_URI: {{ .Values.MONGO_URI }}
+  PORT: {{ .Values.ENV_PORT }}
+  CLIENT_URL: {{ .Values.CLIENT_URI }}

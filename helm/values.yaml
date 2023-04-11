@@ -1,0 +1,60 @@
+# Common
+environment: prod
+
+#Front
+front_name: frontend
+front_replicas: 1
+front_image: lobieses/front:v3
+front_port: 3000
+
+#Backend
+backend_name: backend
+backend_replicas: 1
+backend_image: lobieses/backend:v1
+backend_port: 8000
+
+#BackendEnv
+MONGO_URI: "mongodb://impulsia:snfBNMqz7UrKy4Y9@mongodb-0.mongodb-headless.prod.svc.cluster.local:27017,mongodb-1.mongodb-headless.prod.svc.cluster.local:27017/impulsia?replicaSet=impulsiaRS&appName=mongosh+1.8.0"
+CLIENT_URI: "http://front.lobieses.store"
+ENV_PORT: "!!string 8000"
+
+#Ingress
+front_host: "front.lobieses.store"
+backend_host: "backend.lobieses.store"
+
+#Cert-manager
+email: "lobieses@gmail.com"
+certSecretKey: "impulsia"
+hostedZone: "lobieses.store"
+hostedZoneId: "Z01063762SYQML8KSHC88"
+region: "eu-west-3"
+
+#Mongodb values
+mongodb:
+  fullnameOverride: 'mongodb'
+
+  global:
+    namespaceOverride: prod
+    storageClass: prod-sc
+
+  architecture: replicaset
+  replicaSetName: impulsiaRS
+  replicaCount: 2
+
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  volumePermissions:
+    enabled: true
+  auth:
+    enabled: true
+    rootPassword: aboba
+    usernames: [ "impulsia" ]
+    passwords: [ "snfBNMqz7UrKy4Y9" ]
+    databases: [ "impulsia" ]
+    replicaSetKey: "impulsiaKey"
+  service:
+    ports:
+      mongodb: 27017

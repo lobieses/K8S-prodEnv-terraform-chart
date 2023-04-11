@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.environment }}-certificate
+  namespace: {{ .Values.environment }} # Need to be in the same cluster with the deployment!
+spec:
+  secretName: {{ .Values.certSecretKey }}
+  dnsNames:
+    - {{ print "*." .Values.hostedZone | quote}}
+  issuerRef:
+    name: production-cluster-issuer
+    kind: ClusterIssuer

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.front_name }}-deploy
+  namespace: {{ .Values.environment }}
+  labels:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.front_name }}
+spec:
+  replicas: {{ .Values.front_replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      env: {{ .Values.environment }}
+      kind: {{ .Values.front_name }}-pod
+  template:
+    metadata:
+      labels:
+        env: {{ .Values.environment }}
+        kind: {{ .Values.front_name }}-pod
+    spec:
+      containers:
+        - name: {{ .Values.front_name }}-container
+          image: {{ .Values.front_image }}
+          ports:
+            - containerPort: {{ .Values.front_port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.front_name }}-svc
+  namespace: {{ .Values.environment }}
+  labels:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.front_name }}
+spec:
+  selector:
+    env: {{ .Values.environment }}
+    kind: {{ .Values.front_name }}-pod
+  ports:
+    - name      : {{ .Values.front_name }}-port
+      protocol  : TCP
+      port      : 80
+      targetPort: {{ .Values.front_port }}

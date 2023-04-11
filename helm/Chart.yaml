@@ -1,0 +1,11 @@
+apiVersion: v2
+name       : Main_local_app
+description: my final chart for k8s
+type       : application
+version    : 1.0.0
+appVersion : "1.0.0"
+dependencies:
+  - name: mongodb
+    repository: https://charts.bitnami.com/bitnami
+    version: 13.9.3
+
